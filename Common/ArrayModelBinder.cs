@@ -8,12 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CcLibrary.AspNetCore.Common {
-    public class ArrayModelBinder : IModelBinder {
+    public class ArrayModelBinder<TType> : IModelBinder {
         public Task BindModelAsync(ModelBindingContext bindingContext) {
             if (bindingContext.ModelMetadata.IsEnumerableType) {
                 var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).ToString();
                 if (!string.IsNullOrEmpty(value)) {
-                    var elementType = bindingContext.ModelType.GetTypeInfo().GetElementType();//.GenericTypeArguments[0];
+                    var elementType = typeof(TType); //bindingContext.ModelType.GetTypeInfo().GetElementType();//.GenericTypeArguments[0];
                     var typeConverter = TypeDescriptor.GetConverter(elementType);
                     var splittedValues = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                     var values = splittedValues.Select(t => typeConverter.ConvertFromString(t.Trim())).ToArray();
