@@ -9,8 +9,8 @@ namespace CcLibrary.AspNetCore.Extensions {
             var propertyListInfo = new List<PropertyInfo>();
             if (string.IsNullOrEmpty(fieldsSeparatedByCommas)) {
                 var tsourceProperties = typeof(TSource).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                propertyListInfo.AddRange(addLinks 
-                    ? tsourceProperties 
+                propertyListInfo.AddRange(addLinks
+                    ? tsourceProperties
                     : tsourceProperties.Where(t => !t.Name.Equals("Links")).ToArray());
             } else {
                 var fieldsArray = fieldsSeparatedByCommas.Split(',');
@@ -37,10 +37,11 @@ namespace CcLibrary.AspNetCore.Extensions {
         internal static ExpandoObject CreateExpandoObjectFromProperties<TSource>(TSource source, List<PropertyInfo> propertyListInfo) {
             ExpandoObject dynamicObject = new ExpandoObject();
             foreach (var property in propertyListInfo) {
-                var X = typeof(TSource).GetProperty(property.Name).GetValue(source);
-                ((IDictionary<string, object>)dynamicObject).Add(property.Name, X);
+                ((IDictionary<string, object>)dynamicObject).Add(property.Name,
+                    typeof(TSource).GetProperty(property.Name).GetValue(source));
             }
             return dynamicObject;
         }
+
     }
 }

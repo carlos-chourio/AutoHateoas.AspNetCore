@@ -1,16 +1,13 @@
-﻿using System;
-using CcLibrary.AspNetCore.Validation;
-
-namespace CcLibrary.AspNetCore.Common {
+﻿namespace CcLibrary.AspNetCore.Common {
     public class PagingMetadata {
         public int TotalCount { get; set; }
         public int PageSize { get; set; }
-        [PositiveInteger(ErrorMessage = "La pagina actual debe ser un número positivo")]
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
         public string PreviousPageLink { get; set; }
         public string NextPageLink { get; set; }
         public string SelfPageLink { get; set; }
+
         public PagingMetadata(int totalCount, int pageSize, int currentPage, int totalPages,
             string previousPageLink, string nextPageLink, string selfPageLink) {
             TotalCount = totalCount;
