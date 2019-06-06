@@ -4,7 +4,6 @@ namespace CcLibrary.AspNetCore.Common {
     public class PagingModel {
         private readonly int maxPageSize = 20;
         private int pageSize;
-        private string typeName;
         public PagingModel() {
             PageSize = 10;
         }
