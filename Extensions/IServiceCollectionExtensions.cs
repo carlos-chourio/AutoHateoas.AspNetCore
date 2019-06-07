@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace CcLibrary.AspNetCore.Extensions {
     public static class IServiceCollectionExtensions {
         public static IServiceCollection AddPagingHelper(this IServiceCollection serviceCollection) {
-            return serviceCollection.AddTransient(typeof(IPagingHelperService<>), typeof(PagingHelperService<>));
+            return serviceCollection.AddTransient(typeof(IPaginationHelperService<>), typeof(PaginationHelperService<>));
         }
         public static IServiceCollection AddPropertyMappingService(this IServiceCollection serviceCollection) {
             return serviceCollection.AddTransient<IPropertyMappingService, PropertyMappingService>();
