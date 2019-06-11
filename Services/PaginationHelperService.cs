@@ -12,15 +12,15 @@ namespace CcLibrary.AspNetCore.Services {
             this.linkGenerator = linkGenerator;
         }
 
-        public PagingMetadata GeneratePagingMetaData<T>(IPagedList<T> pagedData, PagingModel<TEntity> PagingModel, string controllerName, string methodName) {
-            string previousPage = pagedData.HasPrevious ? CreateUri(PagingModel, ResourceUriType.Previous, controllerName, methodName) : null;
-            string nextPage = pagedData.HasNext ? CreateUri(PagingModel, ResourceUriType.Next, controllerName, methodName) : null;
-            string selfPage = CreateUri(PagingModel, ResourceUriType.Self, controllerName, methodName);
-            return new PagingMetadata(pagedData.TotalCount, pagedData.PageSize, pagedData.CurrentPage, pagedData.TotalPages, previousPage, nextPage, selfPage);
+        public PaginationMetadata GeneratepaginationMetaData<T>(IPagedList<T> pagedData, PaginationModel<TEntity> paginationModel, string controllerName, string methodName) {
+            string previousPage = pagedData.HasPrevious ? CreateUri(paginationModel, ResourceUriType.Previous, controllerName, methodName) : null;
+            string nextPage = pagedData.HasNext ? CreateUri(paginationModel, ResourceUriType.Next, controllerName, methodName) : null;
+            string selfPage = CreateUri(paginationModel, ResourceUriType.Self, controllerName, methodName);
+            return new PaginationMetadata(pagedData.TotalCount, pagedData.PageSize, pagedData.CurrentPage, pagedData.TotalPages, previousPage, nextPage, selfPage);
         }
 
-        private string CreateUri(PagingModel<TEntity> PagingModel, ResourceUriType uriType, string controllerName, string methodName) {
-            int pageNumber = PagingModel.PageNumber;
+        private string CreateUri(PaginationModel<TEntity> PaginationModel, ResourceUriType uriType, string controllerName, string methodName) {
+            int pageNumber = PaginationModel.PageNumber;
             switch (uriType) {
                 case ResourceUriType.Next:
                     pageNumber++;
@@ -34,11 +34,11 @@ namespace CcLibrary.AspNetCore.Services {
                     break;
             }
             return linkGenerator.GetPathByAction(methodName, controllerName, new {
-                fieldsRequested = PagingModel.FieldsRequested,
-                searchQuery = PagingModel.SearchQuery,
-                pageSize = PagingModel.PageSize,
-                orderBy = PagingModel.OrderBy,
-                ids = PagingModel.Ids,
+                fieldsRequested = PaginationModel.FieldsRequested,
+                searchQuery = PaginationModel.SearchQuery,
+                pageSize = PaginationModel.PageSize,
+                orderBy = PaginationModel.OrderBy,
+                ids = PaginationModel.Ids,
                 pageNumber
             });
         }

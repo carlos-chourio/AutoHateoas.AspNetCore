@@ -3,6 +3,6 @@ using CcLibrary.AspNetCore.Common;
 
 namespace CcLibrary.AspNetCore.Services.Abstractions {
     public interface IPaginationHelperService<TEntity> {
-        PagingMetadata GeneratePagingMetaData<T>(IPagedList<T> pagedData, PagingModel<TEntity> PagingModel, string controllerName, string methodName);
+        PaginationMetadata GeneratepaginationMetaData<T>(IPagedList<T> pagedData, PaginationModel<TEntity> paginationModel, string controllerName, string methodName);
     }
 }

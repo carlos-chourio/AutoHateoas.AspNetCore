@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 namespace CcLibrary.AspNetCore.Common {
-    public class paginationModel {
+    public class PaginationModel {
         private readonly int maxPageSize = 20;
         private int pageSize;
-        public paginationModel() {
+        public PaginationModel() {
             PageSize = 10;
         }
         [ModelBinder(BinderType = typeof(ArrayModelBinder<int>))]

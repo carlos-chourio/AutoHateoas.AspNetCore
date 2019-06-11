@@ -26,7 +26,7 @@ namespace CcLibrary.AspNetCore.Collections {
             AddRange(source);
         }
 
-        public static async Task<IPagedList<T>> CreatePagedListAsync(IQueryable<T> source, int pageNumber, int pageSize) {
+        internal static async Task<IPagedList<T>> CreatePagedListAsync(IQueryable<T> source, int pageNumber, int pageSize) {
             int count = source.Count();
             return new PagedList<T>(await source.Skip(pageNumber).Take(pageSize).ToListAsync(), count, pageNumber, pageSize);
         }

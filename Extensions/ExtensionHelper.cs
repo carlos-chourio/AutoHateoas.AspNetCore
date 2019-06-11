@@ -20,7 +20,7 @@ namespace CcLibrary.AspNetCore.Extensions {
                     if (propertyInfo != null) {
                         propertyListInfo.Add(propertyInfo);
                     } else {
-                        throw new InvalidFilterCriteriaException($"La propiedad {propertyName} no se encontró en el tipo {typeof(TSource).Name}");
+                        throw new InvalidFilterCriteriaException($"The property {propertyName} could not be found inside {typeof(TSource).Name}");
                     }
                 }
                 if (addLinks) {
@@ -28,7 +28,7 @@ namespace CcLibrary.AspNetCore.Extensions {
                     if (links != null) {
                         propertyListInfo.Add(links);
                     } else {
-                        throw new InvalidFilterCriteriaException($"La propiedad Links no se encontró en el tipo {typeof(TSource).Name}");
+                        throw new InvalidFilterCriteriaException($"The property Links could not be found inside {typeof(TSource).Name}");
                     }
                 }
             }

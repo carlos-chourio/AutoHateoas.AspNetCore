@@ -9,9 +9,17 @@ using System.Linq.Dynamic.Core;
 
 namespace CcLibrary.AspNetCore.Extensions {
     public static class IQueryableExtensions {
+        /// <summary>
+        /// Creates an IPagedList from an IQuearyable list of Items.
+        /// </summary>
+        /// <typeparam name="T">The type of the collection item.</typeparam>
+        /// <param name="pageSize">The desired page size for Pagination.</param>
+        /// <param name="pageNumber">The Number of the page.</param>
+        /// <returns></returns>
         public static async Task<IPagedList<T>> ToPagedListAsync<T>(this IQueryable<T> items, int pageSize, int pageNumber) {
             return await PagedList<T>.CreatePagedListAsync(items, pageNumber, pageSize);
         }
+
         public static IQueryable<T> OrderBy<T>(this IQueryable<T> items, string orderBySeparatedByCommas, IDictionary<string, PropertyMappingValue> propertyMapping) {
             if (!string.IsNullOrEmpty(orderBySeparatedByCommas)) {
                 var orderByValues = orderBySeparatedByCommas.Split(',');
@@ -22,7 +30,7 @@ namespace CcLibrary.AspNetCore.Extensions {
                         ? trimedOrderBy.Substring(0, trimedOrderBy.IndexOf(" desc"))
                         : trimedOrderBy;
                     if (!propertyMapping.ContainsKey(orderByBeforeMapping)) {
-                        throw new Exception("La clausula de ordenamiento no pudo enlazarse con ninguna propiedad");
+                        throw new Exception("The order by clause could not be binded to any Property");
                     }
                     var mapping = propertyMapping[orderByBeforeMapping];
                     foreach (var destinationProperty in mapping.DestinationProperties.Reverse()) {

@@ -6,9 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CcLibrary.AspNetCore.Extensions {
     public static class IServiceCollectionExtensions {
-        public static IServiceCollection AddPagingHelper(this IServiceCollection serviceCollection) {
-            return serviceCollection.AddTransient(typeof(IPaginationHelperService<>), typeof(PaginationHelperService<>));
-        }
         public static IServiceCollection AddPropertyMappingService(this IServiceCollection serviceCollection) {
             return serviceCollection.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
@@ -18,8 +15,11 @@ namespace CcLibrary.AspNetCore.Extensions {
             return serviceCollection.AddTransient<MappingProfile, TProfile>();
         }
 
-        public static IServiceCollection AddPaginationHeaderFilter(this IServiceCollection serviceCollection) {
-            return serviceCollection.AddScoped(typeof(AddPaginationHeaderFilter<>), typeof(AddPaginationHeaderFilter<>));
+        public static IServiceCollection AddAutomaticHateoas(this IServiceCollection serviceCollection) {
+            return serviceCollection
+                    .AddSingleton<FilterConfiguration>()
+                    .AddTransient(typeof(IPaginationHelperService<>), typeof(PaginationHelperService<>))
+                    .AddScoped(typeof(AddPaginationHeaderFilter<>), typeof(AddPaginationHeaderFilter<>));
         }
     }
 }
