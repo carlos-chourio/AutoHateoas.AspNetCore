@@ -34,9 +34,10 @@ namespace CcLibrary.AspNetCore.Filters {
                 PaginationModel<TEntity> paginationModel = await FiltersHelper.GetParameterFromAction<PaginationModel<TEntity>>(context);
                 IQueryable<TEntity> list = result.Value as IQueryable<TEntity>;
                 var pagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
-                string controllerName = context.Controller.GetType().Name;
+                /// Doesn't support many pagination methods for a single controller
+                var paginationMethodInfo  = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerInfoValues.Where(t=> t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
                 string mediaType = FiltersHelper.GetValueFromHeader(context, "Accept");
-                PaginationMetadata paginationMetadata = paginationHelperService.GeneratepaginationMetaData(pagedList, paginationModel, controllerName, "GetQuinielasByUser");
+                PaginationMetadata paginationMetadata = paginationHelperService.GeneratepaginationMetaData(pagedList, paginationModel, context.Controller.GetType().Name, paginationMethodInfo.MethodName);
                 var dtoPagedList = mapper.Map<IEnumerable<TDto>>(pagedList);
                 if (mediaType.Equals(filterConfiguration.CustomDataType, StringComparison.CurrentCultureIgnoreCase)) {
                     //Missing link generation

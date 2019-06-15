@@ -11,7 +11,7 @@ namespace CcLibrary.AspNetCore.Extensions {
         /// <returns></returns>
         public static IApplicationBuilder UseAutomaticHateoas(this IApplicationBuilder applicationBuilder, Assembly assembly) {
             FilterConfiguration filterConfiguration = GetFilterConfiguration(applicationBuilder);
-            filterConfiguration.CreatePaginationProfiles(assembly);
+            filterConfiguration.ScanControllersInfo(assembly);
             return applicationBuilder;
         }
 
@@ -23,7 +23,7 @@ namespace CcLibrary.AspNetCore.Extensions {
         /// <returns></returns>
         public static IApplicationBuilder UseAutomaticHateoas(this IApplicationBuilder applicationBuilder, Assembly assembly, string customDataType) {
             var filterConfiguration = GetFilterConfiguration(applicationBuilder);
-            filterConfiguration.CreatePaginationProfiles(assembly, customDataType);
+            filterConfiguration.ScanControllersInfo(assembly, customDataType);
             return applicationBuilder;
         }
 
