@@ -31,14 +31,12 @@ namespace CcLibrary.AspNetCore.Filters {
                 string controllerName = context.Controller.GetType().Name;
                 IQueryable<TEntity> list = result.Value as IQueryable<TEntity>;
                 var pagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
-                var paginationMetadata = paginationHelperService.GeneratepaginationMetaData(pagedList, paginationModel, controllerName, "");
-                string pagination = (filterConfiguration.SupportsCustomDataType && 
-                    context.HttpContext.Request.Headers["Accept"].Equals(filterConfiguration.CustomDataType))
-                    ? JsonConvert.SerializeObject(paginationMetadata)
-                    : JsonConvert.SerializeObject(paginationMetadata.ToMinipaginationMetadata());
-                context.HttpContext.Response.Headers.Add("X-Pagination", pagination);
+                var paginationMetadata = paginationHelperService.GeneratePaginationMetaData(pagedList, paginationModel, controllerName, "");
+                FiltersHelper.AddPaginationHeaders(filterConfiguration, context, paginationMetadata);
                 await next();
             }
         }
+
+        
     }
 }

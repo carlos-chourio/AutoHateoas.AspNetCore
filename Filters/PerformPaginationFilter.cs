@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,11 +10,13 @@ using CcLibrary.AspNetCore.Extensions;
 using CcLibrary.AspNetCore.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 
 namespace CcLibrary.AspNetCore.Filters {
     /// <summary>
     /// Performs the pagination from an IQueryable object of type <typeparamref name="TEntity"/>
     /// and converts the object result to a Paged List of type <typeparamref name="TDto"/>
+    /// If 
     /// </summary>
     /// <typeparam name="TEntity">The type of the entity</typeparam>
     /// <typeparam name="TDto">The type data transfer object</typeparam>
@@ -21,11 +24,13 @@ namespace CcLibrary.AspNetCore.Filters {
         private readonly IPaginationHelperService<TEntity> paginationHelperService;
         private readonly FilterConfiguration filterConfiguration;
         private readonly IMapper mapper;
+        private readonly LinkGenerator linkGenerator;
 
-        public PerformPaginationFilter(IPaginationHelperService<TEntity> paginationHelperService, FilterConfiguration filterConfiguration, IMapper mapper) {
+        public PerformPaginationFilter(IPaginationHelperService<TEntity> paginationHelperService, FilterConfiguration filterConfiguration, IMapper mapper, LinkGenerator linkGenerator) {
             this.paginationHelperService = paginationHelperService ?? throw new ArgumentNullException(nameof(paginationHelperService));
             this.filterConfiguration = filterConfiguration ?? throw new ArgumentNullException(nameof(filterConfiguration));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next) {
@@ -37,21 +42,22 @@ namespace CcLibrary.AspNetCore.Filters {
                 /// Doesn't support many pagination methods for a single controller
                 var paginationMethodInfo  = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerActions.Where(t=> t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
                 string mediaType = FiltersHelper.GetValueFromHeader(context, "Accept");
-                PaginationMetadata paginationMetadata = paginationHelperService.GeneratepaginationMetaData(pagedList, paginationModel, context.Controller.GetType().Name, paginationMethodInfo.MethodName);
+                PaginationMetadata paginationMetadata = paginationHelperService.GeneratePaginationMetaData(pagedList, paginationModel, context.Controller.GetType().Name, paginationMethodInfo.ActionName);
                 var dtoPagedList = mapper.Map<IEnumerable<TDto>>(pagedList);
-                if (mediaType.Equals(filterConfiguration.CustomDataType, StringComparison.CurrentCultureIgnoreCase)) {
-                    //Missing link generation
-                    #region old code
-                    //var pageWithLinks = quinielasDto.Select(quiniela => {
-                    //    return QuinielaHelper.AddLinksForQuiniela(quiniela, quiniela.Id, linkGenerator)
-                    //    .ShapeDataWithRequestedFields(paginationViewModel.FieldsRequested, true);
-                    //});
-                    //return Ok(QuinielaHelper.AddLinksForQuinielapaginationCollection(quinielaDtoPageWithLinks, paginationModel, paginationMetadata)); 
-                    #endregion
+                if (filterConfiguration.SupportsCustomDataType && mediaType.Equals(filterConfiguration.CustomDataType, StringComparison.CurrentCultureIgnoreCase)) {
+                    var controllerType = context.Controller.GetType();
+                    var dtoPagedListWithExternalLinks = FiltersHelper.CreateLinksForCollectionResource(dtoPagedList, filterConfiguration, paginationMetadata, context.Controller.GetType());
+                    var shapedDtoPagedListWithLinks = new EnvelopCollectionDto<ExpandoObject> {
+                        Items = dtoPagedListWithExternalLinks.Items.Select(dto => {
+                            return FiltersHelper
+                                .CreateLinksForSingleResource(dto, filterConfiguration, linkGenerator, controllerType)
+                                .ShapeDataWithRequestedFields(paginationModel.FieldsRequested, true);
+                        }), Links = dtoPagedListWithExternalLinks.Links
+                    };
+                    result.Value = shapedDtoPagedListWithLinks;
                 } else {
                     result.Value = dtoPagedList.ShapeCollectionDataWithRequestedFields(paginationModel.FieldsRequested, true);
                 }
-
                 await next();
             }
         }

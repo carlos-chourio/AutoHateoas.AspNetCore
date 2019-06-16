@@ -5,17 +5,17 @@ using CcLibrary.AspNetCore.Services.Abstractions;
 using Microsoft.AspNetCore.Routing;
 
 namespace CcLibrary.AspNetCore.Services {
-    public class PaginationHelperService<TEntity> : IPaginationHelperService<TEntity> {
+    internal class PaginationHelperService<TEntity> : IPaginationHelperService<TEntity> {
         private readonly LinkGenerator linkGenerator;
 
         public PaginationHelperService(LinkGenerator linkGenerator) {
             this.linkGenerator = linkGenerator;
         }
 
-        public PaginationMetadata GeneratepaginationMetaData<T>(IPagedList<T> pagedData, PaginationModel<TEntity> paginationModel, string controllerName, string methodName) {
-            string previousPage = pagedData.HasPrevious ? CreateUri(paginationModel, ResourceUriType.Previous, controllerName, methodName) : null;
-            string nextPage = pagedData.HasNext ? CreateUri(paginationModel, ResourceUriType.Next, controllerName, methodName) : null;
-            string selfPage = CreateUri(paginationModel, ResourceUriType.Self, controllerName, methodName);
+        public PaginationMetadata GeneratePaginationMetaData<T>(IPagedList<T> pagedData, PaginationModel<TEntity> paginationModel, string controllerName, string actionName) {
+            string previousPage = pagedData.HasPrevious ? CreateUri(paginationModel, ResourceUriType.Previous, controllerName, actionName) : null;
+            string nextPage = pagedData.HasNext ? CreateUri(paginationModel, ResourceUriType.Next, controllerName, actionName) : null;
+            string selfPage = CreateUri(paginationModel, ResourceUriType.Self, controllerName, actionName);
             return new PaginationMetadata(pagedData.TotalCount, pagedData.PageSize, pagedData.CurrentPage, pagedData.TotalPages, previousPage, nextPage, selfPage);
         }
 
