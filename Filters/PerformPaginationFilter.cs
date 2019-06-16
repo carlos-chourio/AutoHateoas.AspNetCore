@@ -35,7 +35,7 @@ namespace CcLibrary.AspNetCore.Filters {
                 IQueryable<TEntity> list = result.Value as IQueryable<TEntity>;
                 var pagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
                 /// Doesn't support many pagination methods for a single controller
-                var paginationMethodInfo  = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerInfoValues.Where(t=> t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
+                var paginationMethodInfo  = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerActions.Where(t=> t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
                 string mediaType = FiltersHelper.GetValueFromHeader(context, "Accept");
                 PaginationMetadata paginationMetadata = paginationHelperService.GeneratepaginationMetaData(pagedList, paginationModel, context.Controller.GetType().Name, paginationMethodInfo.MethodName);
                 var dtoPagedList = mapper.Map<IEnumerable<TDto>>(pagedList);

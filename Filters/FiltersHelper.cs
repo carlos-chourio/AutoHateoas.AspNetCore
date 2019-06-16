@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CcLibrary.AspNetCore.Attributes;
+using CcLibrary.AspNetCore.DTOs;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Linq;
@@ -31,6 +34,18 @@ namespace CcLibrary.AspNetCore.Filters {
 
         internal static bool IsResponseSuccesful(ObjectResult result) {
             return result?.Value != null && result?.StatusCode >= 200 && result?.StatusCode < 300;
+        }
+
+        internal static EnvelopDto<TDto> CreateLinksForSingle<TDto>(TDto dto, FilterConfiguration filterConfiguration, LinkGenerator linkGenerator, Type controllerType) 
+            where TDto : IIdentityDto {
+            var envelop = new EnvelopDto<TDto>(dto);
+            var actionsFromController = filterConfiguration.ControllerInfoDictionary[controllerType]
+                .ControllerActions.Where(t => t.ResourceType.Equals(ResourceType.Single)).ToArray();
+            foreach (var action in actionsFromController) {
+                envelop.Links.Add(new LinkDto(linkGenerator.GetPathByAction(action.ActionName, controllerType.Name, new { dto.Id }),
+                    action.MethodName, action.MethodType));
+            }
+            return envelop;
         }
 
         private static async Task<TParameter> GetParameterFromParameterDescriptor<TParameter>(ResultExecutingContext context, ParameterDescriptor parameterDescriptor) {
