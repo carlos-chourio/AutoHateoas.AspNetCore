@@ -27,7 +27,7 @@ namespace CcLibrary.AspNetCore.Filters {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next) {
             var result = context.Result as ObjectResult;
             if (FiltersHelper.IsResponseSuccesful(result)) {
-                PaginationModel<TEntity> paginationModel = await FiltersHelper.GetParameterFromAction<PaginationModel<TEntity>>(context);
+                PaginationModel<TEntity> paginationModel = await FiltersHelper.GetParameterFromActionAsync<PaginationModel<TEntity>>(context);
                 string controllerName = context.Controller.GetType().Name;
                 IQueryable<TEntity> list = result.Value as IQueryable<TEntity>;
                 var pagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);

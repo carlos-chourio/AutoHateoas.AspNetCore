@@ -15,16 +15,47 @@ using System.Threading.Tasks;
 
 namespace CcLibrary.AspNetCore.Filters {
     internal static class FiltersHelper {
-        internal static async Task<TParameter> GetParameterFromAction<TParameter>(ResultExecutingContext context) {
+        /// <summary>
+        /// Gets a parameter of type <typeparamref name="TParameter"/> from the Action by inspectioning the type.
+        /// </summary>
+        /// <typeparam name="TParameter">The type of the parameter you want to get from the the Action</typeparam>
+        /// <param name="context">The Context of the Result Filter</param>
+        /// <returns>The Parameter of type <typeparamref name="TParameter"/></returns>
+        internal static async Task<TParameter> GetParameterFromActionAsync<TParameter>(ResultExecutingContext context) {
             var parameterDescriptor = context.ActionDescriptor.Parameters.Where(t => t.ParameterType.Equals(typeof(TParameter))).FirstOrDefault();
             return await GetParameterFromParameterDescriptor<TParameter>(context, parameterDescriptor);
         }
 
-        internal static async Task<TParameter> GetParameterFromAction<TParameter>(ResultExecutingContext context, string parameterName) {
+        /// <summary>
+        /// Gets a parameter of type <typeparamref name="TParameter"/> from the Action by inspectioning <paramref name="parentType"/>.
+        /// </summary>
+        /// <typeparam name="TParameter">The type of the parameter you want to get from the the Action</typeparam>
+        /// <param name="context">The Context of the Result Filter</param>
+        /// <param name="childType">The Child type of the parameter</param>
+        /// <returns>The Parameter of type <typeparamref name="TParameter"/></returns>
+        internal static async Task<TParameter> GetParameterFromActionAsync<TParameter>(ResultExecutingContext context, Type childType) {
+            var parameterDescriptor = context.ActionDescriptor.Parameters.Where(t => t.ParameterType.Equals(childType)).FirstOrDefault();
+            return await GetParameterFromParameterDescriptor<TParameter>(context, parameterDescriptor);
+        }
+
+        /// <summary>
+        /// Gets a parameter of type <typeparamref name="TParameter"/> from the Action by inspectioning the <paramref name="parameterName"/>.
+        /// </summary>
+        /// <typeparam name="TParameter">The type of the parameter you want to get from the the Action</typeparam>
+        /// <param name="context">The Context of the Result Filter</param>
+        /// <param name="parameterName">The name of the parameter to find</param>
+        /// <returns>The Parameter of type <typeparamref name="TParameter"/></returns>
+        internal static async Task<TParameter> GetParameterFromActionAsync<TParameter>(ResultExecutingContext context, string parameterName) {
             var parameterDescriptor = context.ActionDescriptor.Parameters.Where(t => t.Name.Equals(parameterName)).FirstOrDefault();
             return await GetParameterFromParameterDescriptor<TParameter>(context, parameterDescriptor);
         }
 
+        /// <summary>
+        /// Gets the value of a <paramref name="key"/> from the query string inside the <paramref name="context"/>
+        /// </summary>
+        /// <param name="context">The Context of the Result Filter</param>
+        /// <param name="key">The Key to be searched inside the Query String</param>
+        /// <returns>The value from the query string</returns>
         internal static string GetValueFromQueryString(ResultExecutingContext context, string key) {
             if (context.HttpContext.Request.Query.TryGetValue(key, out StringValues fields)) {
                 return fields.ToString();
@@ -32,10 +63,21 @@ namespace CcLibrary.AspNetCore.Filters {
             return string.Empty;
         }
 
+        /// <summary>
+        /// Gets the value of a <paramref name="key"/> from the Headers inside the <paramref name="context"/>
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="key"></param>
+        /// <returns>The value from the header</returns>
         internal static string GetValueFromHeader(ResultExecutingContext context, string key) {
             return context.HttpContext.Request.Headers[key].ToString();
         }
 
+        /// <summary>
+        /// Checks if the response was Succesful
+        /// </summary>
+        /// <param name="result">The result from the action.</param>
+        /// <returns>true if succesful, otherwise false</returns>
         internal static bool IsResponseSuccesful(ObjectResult result) {
             return result?.Value != null && result?.StatusCode >= 200 && result?.StatusCode < 300;
         }

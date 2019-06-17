@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CcLibrary.AspNetCore.Common {
@@ -13,7 +10,7 @@ namespace CcLibrary.AspNetCore.Common {
             if (bindingContext.ModelMetadata.IsEnumerableType) {
                 var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).ToString();
                 if (!string.IsNullOrEmpty(value)) {
-                    var elementType = typeof(TType); //bindingContext.ModelType.GetTypeInfo().GetElementType();//.GenericTypeArguments[0];
+                    var elementType = typeof(TType); 
                     var typeConverter = TypeDescriptor.GetConverter(elementType);
                     var splittedValues = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                     var values = splittedValues.Select(t => typeConverter.ConvertFromString(t.Trim())).ToArray();
@@ -31,7 +28,6 @@ namespace CcLibrary.AspNetCore.Common {
             bindingContext.Result = ModelBindingResult.Success(typedValues);
             return Task.CompletedTask;
         }
-
 
         private static Task FailedBinding(ModelBindingContext bindingContext) {
             bindingContext.Result = ModelBindingResult.Failed();

@@ -15,7 +15,7 @@ namespace CcLibrary.AspNetCore.Extensions {
             return serviceCollection.AddTransient<MappingProfile, TProfile>();
         }
 
-        public static IServiceCollection AddAutomaticHateoas(this IServiceCollection serviceCollection) {
+        public static IServiceCollection AddAutoHateoas(this IServiceCollection serviceCollection) {
             return serviceCollection
                     .AddSingleton<FilterConfiguration>()
                     .AddTransient(typeof(IPaginationHelperService<>), typeof(PaginationHelperService<>))

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CcLibrary.AspNetCore.Attributes;
-using CcLibrary.AspNetCore.Common;
 using Microsoft.AspNetCore.Mvc;
+using CcLibrary.AspNetCore.Common;
 using Microsoft.AspNetCore.Mvc.Routing;
+using CcLibrary.AspNetCore.Attributes;
 
 namespace CcLibrary.AspNetCore.Filters {
     public class FilterConfiguration {
@@ -13,19 +13,31 @@ namespace CcLibrary.AspNetCore.Filters {
         private string dumbLogger;
         internal bool SupportsCustomDataType { get; private set; }
         internal string CustomDataType { get; private set; }
+        internal Type CustomPaginationModelType { get; private set; }
+        internal bool SupportsCustomPaginationModel { get; private set; }
 
         public FilterConfiguration() {
             ControllerInfoDictionary = new Dictionary<Type, ControllerInfo>();
         }
 
-
-        public void ScanControllersInfo(Assembly assembly, string customDataType=null) {
+        /// <summary>
+        /// Creates Pagination Profiles by inspectioning the Controllers inside the <paramref name="assembly"/>
+        /// </summary>
+        /// <param name="assembly">Assembly in which AutoHateoas is going to inspect the code</param>
+        /// <param name="customDataType">Custom data type for supporting hateoas</param>
+        /// <param name="customPaginationModelType">The type of the Custom Pagination Model</param>
+        public void ScanControllersInfo(Assembly assembly, string customDataType=null, Type customPaginationModelType = null) {
             if (assembly == null) {
                 throw new ArgumentNullException(nameof(assembly));
             }
             if (!string.IsNullOrEmpty(customDataType)) {
                 SupportsCustomDataType = true;
                 CustomDataType = customDataType;
+            }
+
+            if (customPaginationModelType == null) {
+                SupportsCustomPaginationModel = true;
+                CustomPaginationModelType = customPaginationModelType;
             }
             var controllerTypes = assembly.GetTypes().Where(t => t.GetCustomAttribute(typeof(ApiControllerAttribute)) != null);
             Type[] httpMethodTypes = { typeof(HttpGetAttribute), typeof(HttpPostAttribute), typeof(HttpPutAttribute), typeof(HttpPatchAttribute) };
