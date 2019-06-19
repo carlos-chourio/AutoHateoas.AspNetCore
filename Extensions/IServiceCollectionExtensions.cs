@@ -20,7 +20,7 @@ namespace CcLibrary.AspNetCore.Extensions {
                     .AddSingleton<FilterConfiguration>()
                     .AddTransient(typeof(IPaginationHelperService<>), typeof(PaginationHelperService<>))
                     .AddScoped(typeof(AddPaginationHeaderFilter<>), typeof(AddPaginationHeaderFilter<>))
-                    .AddScoped(typeof(PerformPaginationFilter<,>), typeof(PerformPaginationFilter<,>))
+                    .AddScoped(typeof(HateoasPagination<,>), typeof(HateoasPagination<,>))
                     .AddScoped(typeof(Hateoas<,>), typeof(Hateoas<,>));
         }
     }

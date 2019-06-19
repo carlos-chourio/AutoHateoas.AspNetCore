@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -14,18 +14,19 @@ using Microsoft.AspNetCore.Routing;
 
 namespace CcLibrary.AspNetCore.Filters {
     /// <summary>
-    /// Performs the pagination from an IQueryable object of type <typeparamref name="TEntity"/>
-    /// and converts the object result to a Paged List of type <typeparamref name="TDto"/>
+    /// Adds Hateoas Links for Paginated Resources of type <typeparamref name="TEntity"/>.
+    /// Converts the object result to a <typeparamref name="TDto"/> collection with Hateoas Links
+    /// The Object Result must be a tuple of type (resouce:object, paginationMetadata:PaginationMetadata)
     /// </summary>
     /// <typeparam name="TEntity">The type of the entity</typeparam>
     /// <typeparam name="TDto">The type data transfer object</typeparam>
-    public class HateoasPagination<TEntity, TDto> : IAsyncResultFilter  where TDto : IIdentityDto {
+    public class HateoasForCollection<TEntity, TDto> : IAsyncResultFilter  where TDto : IIdentityDto {
         private readonly IPaginationHelperService<TEntity> paginationHelperService;
         private readonly FilterConfiguration filterConfiguration;
         private readonly IMapper mapper;
         private readonly LinkGenerator linkGenerator;
 
-        public HateoasPagination(IPaginationHelperService<TEntity> paginationHelperService, FilterConfiguration filterConfiguration, IMapper mapper, LinkGenerator linkGenerator) {
+        public HateoasForCollection(IPaginationHelperService<TEntity> paginationHelperService, FilterConfiguration filterConfiguration, IMapper mapper, LinkGenerator linkGenerator) {
             this.paginationHelperService = paginationHelperService ?? throw new ArgumentNullException(nameof(paginationHelperService));
             this.filterConfiguration = filterConfiguration ?? throw new ArgumentNullException(nameof(filterConfiguration));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -37,14 +38,11 @@ namespace CcLibrary.AspNetCore.Filters {
             if (FiltersHelper.IsResponseSuccesful(result)) {
                 PaginationModel<TEntity> paginationModel = 
                     await FiltersHelper.GetParameterFromActionAsync<PaginationModel<TEntity>>(context);
-                
-                IQueryable<TEntity> list = result.Value as IQueryable<TEntity>;
-                var pagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
-                /// Doesn't support many pagination methods for a single controller
+                (IEnumerable<TEntity> values,PaginationInfo metadata) resultValue = ((IEnumerable<TEntity>,PaginationMetadata)) result.Value;
                 var paginationMethodInfo  = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerActions.Where(t=> t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
+                var paginationMetadata = paginationHelperService.GeneratePaginationMetaData(resultValue.metadata,paginationModel, context.Controller.GetType().Name, paginationMethodInfo.ActionName);
                 string mediaType = FiltersHelper.GetValueFromHeader(context, "Accept");
-                PaginationMetadata paginationMetadata = paginationHelperService.GeneratePaginationMetaData(pagedList, paginationModel, context.Controller.GetType().Name, paginationMethodInfo.ActionName);
-                var dtoPagedList = mapper.Map<IEnumerable<TDto>>(pagedList);
+                var dtoPagedList = mapper.Map<IEnumerable<TDto>>(resultValue.values); 
                 if (filterConfiguration.SupportsCustomDataType && mediaType.Equals(filterConfiguration.CustomDataType, StringComparison.CurrentCultureIgnoreCase)) {
                     var controllerType = context.Controller.GetType();
                     var dtoPagedListWithExternalLinks = FiltersHelper.CreateLinksForCollectionResource(dtoPagedList, filterConfiguration, paginationMetadata, context.Controller.GetType());

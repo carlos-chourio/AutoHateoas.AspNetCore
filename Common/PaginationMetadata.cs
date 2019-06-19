@@ -1,9 +1,5 @@
 ﻿namespace CcLibrary.AspNetCore.Common {
-    public class PaginationMetadata {
-        public int TotalCount { get; set; }
-        public int PageSize { get; set; }
-        public int CurrentPage { get; set; }
-        public int TotalPages { get; set; }
+    public class PaginationMetadata : PaginationInfo, IPaginationLinks {
         public string PreviousPageLink { get; set; }
         public string NextPageLink { get; set; }
         public string SelfPageLink { get; set; }
@@ -19,20 +15,13 @@
             SelfPageLink = selfPageLink;
         }
 
-        public MinipaginationMetadata ToMinipaginationMetadata() {
-            return new MinipaginationMetadata() {
+        public PaginationInfo ToPaginationInfo() {
+            return new PaginationInfo() {
                 CurrentPage = CurrentPage,
                 PageSize = PageSize,
                 TotalPages = TotalPages,
                 TotalCount = TotalCount
             };
-        }
-
-        public class MinipaginationMetadata {
-            public int TotalCount { get; set; }
-            public int PageSize { get; set; }
-            public int CurrentPage { get; set; }
-            public int TotalPages { get; set; }
         }
     }
 }

@@ -12,11 +12,25 @@ namespace CcLibrary.AspNetCore.Services {
             this.linkGenerator = linkGenerator;
         }
 
-        public PaginationMetadata GeneratePaginationMetaData<T>(IPagedList<T> pagedData, PaginationModel<TEntity> paginationModel, string controllerName, string actionName) {
-            string previousPage = pagedData.HasPrevious ? CreateUri(paginationModel, ResourceUriType.Previous, controllerName, actionName) : null;
-            string nextPage = pagedData.HasNext ? CreateUri(paginationModel, ResourceUriType.Next, controllerName, actionName) : null;
-            string selfPage = CreateUri(paginationModel, ResourceUriType.Self, controllerName, actionName);
+        public PaginationMetadata GeneratePaginationMetaData<T>(IPagedList<T> pagedData, PaginationModel<TEntity> paginationModel, string controllerName, string actionName)
+        {
+            string previousPage, nextPage, selfPage;
+            GeneratePaginationLinks(pagedData.HasPrevious, pagedData.HasNext, paginationModel, controllerName, actionName, out previousPage, out nextPage, out selfPage);
             return new PaginationMetadata(pagedData.TotalCount, pagedData.PageSize, pagedData.CurrentPage, pagedData.TotalPages, previousPage, nextPage, selfPage);
+        }
+
+        public PaginationMetadata GeneratePaginationMetaData(PaginationInfo paginationInfo, PaginationModel<TEntity> paginationModel, string controllerName, string actionName)
+        {
+            string previousPage, nextPage, selfPage;
+            GeneratePaginationLinks(paginationInfo.CurrentPage>1, paginationInfo.CurrentPage<paginationInfo.TotalPages, paginationModel, controllerName, actionName, out previousPage, out nextPage, out selfPage);
+            return new PaginationMetadata(paginationInfo.TotalCount, paginationInfo.PageSize, paginationInfo.CurrentPage, paginationInfo.TotalPages, previousPage, nextPage, selfPage);
+        }
+
+        private void GeneratePaginationLinks(bool hasPrevious, bool hasNext, PaginationModel<TEntity> paginationModel, string controllerName, string actionName, out string previousPage, out string nextPage, out string selfPage)
+        {
+            previousPage = hasPrevious ? CreateUri(paginationModel, ResourceUriType.Previous, controllerName, actionName) : null;
+            nextPage = hasNext ? CreateUri(paginationModel, ResourceUriType.Next, controllerName, actionName) : null;
+            selfPage = CreateUri(paginationModel, ResourceUriType.Self, controllerName, actionName);
         }
 
         private string CreateUri(PaginationModel<TEntity> PaginationModel, ResourceUriType uriType, string controllerName, string methodName) {

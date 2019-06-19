@@ -113,7 +113,7 @@ namespace CcLibrary.AspNetCore.Filters {
             string pagination = (filterConfiguration.SupportsCustomDataType &&
                                 context.HttpContext.Request.Headers["Accept"].Equals(filterConfiguration.CustomDataType))
                                 ? JsonConvert.SerializeObject(paginationMetadata)
-                                : JsonConvert.SerializeObject(paginationMetadata.ToMinipaginationMetadata());
+                                : JsonConvert.SerializeObject(paginationMetadata.ToPaginationInfo());
             context.HttpContext.Response.Headers.Add("X-Pagination", pagination);
         }
 
