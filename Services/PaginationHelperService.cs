@@ -1,10 +1,10 @@
-﻿using CcLibrary.AspNetCore.Collections.Abstractions;
-using CcLibrary.AspNetCore.Common;
-using CcLibrary.AspNetCore.Enumerations;
-using CcLibrary.AspNetCore.Services.Abstractions;
+﻿using AutoHateoas.AspNetCore.Collections.Abstractions;
+using AutoHateoas.AspNetCore.Common;
+using AutoHateoas.AspNetCore.Enumerations;
+using AutoHateoas.AspNetCore.Services.Abstractions;
 using Microsoft.AspNetCore.Routing;
 
-namespace CcLibrary.AspNetCore.Services {
+namespace AutoHateoas.AspNetCore.Services {
     internal class PaginationHelperService<TEntity> : IPaginationHelperService<TEntity> {
         private readonly LinkGenerator linkGenerator;
 

@@ -1,9 +1,9 @@
-﻿using CcLibrary.AspNetCore.Common;
-using CcLibrary.AspNetCore.Filters;
+﻿using AutoHateoas.AspNetCore.Common;
+using AutoHateoas.AspNetCore.Filters;
 using Microsoft.AspNetCore.Builder;
 using System.Reflection;
 
-namespace CcLibrary.AspNetCore.Extensions {
+namespace AutoHateoas.AspNetCore.Extensions {
     public static class AppBuilderExtensions {
         /// <summary>
         /// Enables Automatic Hateoas 

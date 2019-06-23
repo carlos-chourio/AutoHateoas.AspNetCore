@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CcLibrary.AspNetCore.Collections.Abstractions {
+namespace AutoHateoas.AspNetCore.Collections.Abstractions {
     public interface IPagedList<T> : IList<T> {
         int CurrentPage { get; }
         bool HasNext { get; }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CcLibrary.AspNetCore.Validation {
+namespace AutoHateoas.AspNetCore.Validation {
     public class MaxIntegerAttribute : ValidationAttribute {
         public int MaximumNumber { get; set; }
         public override bool IsValid(object value) {

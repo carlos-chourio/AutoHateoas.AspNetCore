@@ -1,20 +1,20 @@
 ﻿using System.Threading.Tasks;
-using CcLibrary.AspNetCore.Services.Abstractions;
+using AutoHateoas.AspNetCore.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Newtonsoft.Json;
-using CcLibrary.AspNetCore.Collections.Abstractions;
-using CcLibrary.AspNetCore.Common;
+using AutoHateoas.AspNetCore.Common;
 using System.Linq;
-using CcLibrary.AspNetCore.Extensions;
+using AutoHateoas.AspNetCore.Extensions;
+using System;
 
-namespace CcLibrary.AspNetCore.Filters {
+namespace AutoHateoas.AspNetCore.Filters {
 
     /// <summary>
     /// Adds X-Pagination Header to the response.
     /// The value of the response should be of IQueryable of <typeparamref name="TEntity"/>
     /// </summary>
     /// <typeparam name="TEntity">The entity</typeparam>
+    [Obsolete]
     public class AddPaginationHeaderFilter<TEntity> : IAsyncResultFilter {
         private readonly IPaginationHelperService<TEntity> paginationHelperService;
         private readonly FilterConfiguration filterConfiguration;
@@ -32,7 +32,7 @@ namespace CcLibrary.AspNetCore.Filters {
                 IQueryable<TEntity> list = result.Value as IQueryable<TEntity>;
                 var pagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
                 var paginationMetadata = paginationHelperService.GeneratePaginationMetaData(pagedList, paginationModel, controllerName, "");
-                FiltersHelper.AddPaginationHeaders(filterConfiguration, context, paginationMetadata);
+                HateoasHelper.AddPaginationHeaders(filterConfiguration, context, paginationMetadata);
                 await next();
             }
         }

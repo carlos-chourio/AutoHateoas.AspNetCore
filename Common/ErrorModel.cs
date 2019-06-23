@@ -1,4 +1,4 @@
-﻿namespace CcLibrary.AspNetCore.Common {
+﻿namespace AutoHateoas.AspNetCore.Common {
     public class ErrorModel {
         public string ErrorMessage { get; set; }
         public ErrorModel(string errorMessage) {

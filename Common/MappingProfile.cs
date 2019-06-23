@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using CcLibrary.AspNetCore.Services;
-using CcLibrary.AspNetCore.Services.Abstractions;
+using AutoHateoas.AspNetCore.Services;
+using AutoHateoas.AspNetCore.Services.Abstractions;
 
-namespace CcLibrary.AspNetCore.Common {
+namespace AutoHateoas.AspNetCore.Common {
     public abstract class MappingProfile {
         public IList<IPropertyMapping> MappingDictionaries { get; set; } = new List<IPropertyMapping>();
 

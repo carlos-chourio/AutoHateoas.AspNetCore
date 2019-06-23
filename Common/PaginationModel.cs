@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace CcLibrary.AspNetCore.Common {
+namespace AutoHateoas.AspNetCore.Common {
     public class PaginationModel {
         private readonly int maxPageSize = 20;
         private int pageSize;

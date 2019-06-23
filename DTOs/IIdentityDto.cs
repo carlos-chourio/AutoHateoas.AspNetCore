@@ -1,4 +1,4 @@
-﻿namespace CcLibrary.AspNetCore.DTOs {
+﻿namespace AutoHateoas.AspNetCore.DTOs {
     public interface IIdentityDto {
         int Id { get; set; }
     }

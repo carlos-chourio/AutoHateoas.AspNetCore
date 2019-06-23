@@ -1,4 +1,4 @@
-namespace CcLibrary.AspNetCore.DTOs {
+namespace AutoHateoas.AspNetCore.DTOs {
     public class LinkDto {
         public string Href { get;set; }
         public string Rel { get;set; }

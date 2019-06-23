@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using CcLibrary.AspNetCore.Attributes;
+using AutoHateoas.AspNetCore.Attributes;
 
-namespace CcLibrary.AspNetCore.Common {
+namespace AutoHateoas.AspNetCore.Common {
     internal class ControllerInfo {
         internal ICollection<ControllerAction> ControllerActions { get;set; }
         public ControllerInfo() {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CcLibrary.AspNetCore.Common {
+namespace AutoHateoas.AspNetCore.Common {
     public class PropertyMappingValue {
         public IEnumerable<string> DestinationProperties { get;set; }
         public bool Revert { get;set; }

@@ -3,7 +3,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 
-namespace CcLibrary.AspNetCore.Extensions {
+namespace AutoHateoas.AspNetCore.Extensions {
     public static class ExtensionHelper {
         internal static List<PropertyInfo> GetPropertiesFromObject<TSource>(string fieldsSeparatedByCommas, bool addLinks = false) {
             var propertyListInfo = new List<PropertyInfo>();

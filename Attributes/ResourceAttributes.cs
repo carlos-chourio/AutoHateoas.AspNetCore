@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace CcLibrary.AspNetCore.Attributes {
+namespace AutoHateoas.AspNetCore.Attributes {
     public class HateoasResourceAttribute : Attribute {
         public ResourceType ResourceType { get;private set; }
 

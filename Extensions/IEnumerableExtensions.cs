@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Reflection;
 
-namespace CcLibrary.AspNetCore.Extensions {
+namespace AutoHateoas.AspNetCore.Extensions {
     public static class IEnumerableExtensions {
         public static IEnumerable<ExpandoObject> ShapeCollectionDataWithRequestedFields<TSource>(this IEnumerable<TSource> collection, string fieldsSeparatedByCommas = null, bool addLinks = false) {
             IList<ExpandoObject> dynamicCollection = new List<ExpandoObject>();

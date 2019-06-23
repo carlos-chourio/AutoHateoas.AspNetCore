@@ -1,13 +1,13 @@
-using CcLibrary.AspNetCore.Collections.Abstractions;
-using CcLibrary.AspNetCore.Collections;
+using AutoHateoas.AspNetCore.Collections.Abstractions;
+using AutoHateoas.AspNetCore.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CcLibrary.AspNetCore.Common;
+using AutoHateoas.AspNetCore.Common;
 using System.Linq.Dynamic.Core;
 
-namespace CcLibrary.AspNetCore.Extensions {
+namespace AutoHateoas.AspNetCore.Extensions {
     public static class IQueryableExtensions {
         /// <summary>
         /// Creates an IPagedList from an IQuearyable list of Items.

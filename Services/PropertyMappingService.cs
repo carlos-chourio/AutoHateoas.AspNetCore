@@ -1,10 +1,10 @@
-using CcLibrary.AspNetCore.Common;
-using CcLibrary.AspNetCore.Services.Abstractions;
+using AutoHateoas.AspNetCore.Common;
+using AutoHateoas.AspNetCore.Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CcLibrary.AspNetCore.Services {
+namespace AutoHateoas.AspNetCore.Services {
     public class PropertyMappingService : IPropertyMappingService {
         private IList<IPropertyMapping> mappingDictionaries;
 

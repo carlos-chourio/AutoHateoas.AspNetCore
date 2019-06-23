@@ -1,10 +1,10 @@
-using CcLibrary.AspNetCore.Common;
-using CcLibrary.AspNetCore.Filters;
-using CcLibrary.AspNetCore.Services;
-using CcLibrary.AspNetCore.Services.Abstractions;
+using AutoHateoas.AspNetCore.Common;
+using AutoHateoas.AspNetCore.Filters;
+using AutoHateoas.AspNetCore.Services;
+using AutoHateoas.AspNetCore.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CcLibrary.AspNetCore.Extensions {
+namespace AutoHateoas.AspNetCore.Extensions {
     public static class IServiceCollectionExtensions {
         public static IServiceCollection AddPropertyMappingService(this IServiceCollection serviceCollection) {
             return serviceCollection.AddTransient<IPropertyMappingService, PropertyMappingService>();
@@ -19,9 +19,8 @@ namespace CcLibrary.AspNetCore.Extensions {
             return serviceCollection
                     .AddSingleton<FilterConfiguration>()
                     .AddTransient(typeof(IPaginationHelperService<>), typeof(PaginationHelperService<>))
-                    .AddScoped(typeof(AddPaginationHeaderFilter<>), typeof(AddPaginationHeaderFilter<>))
-                    .AddScoped(typeof(HateoasPagination<,>), typeof(HateoasPagination<,>))
-                    .AddScoped(typeof(Hateoas<,>), typeof(Hateoas<,>));
+                    .AddScoped(typeof(HateoasAutoPagination<,>), typeof(HateoasAutoPagination<,>))
+                    .AddScoped(typeof(Hateoas<>), typeof(Hateoas<>));
         }
     }
 }

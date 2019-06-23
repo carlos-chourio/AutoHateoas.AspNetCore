@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace CcLibrary.AspNetCore.Validation {
+namespace AutoHateoas.AspNetCore.Validation {
     public static class PropertiesValidator {
         public static bool ValidatePropertiesExist(Type type, string fieldsSeparatedByCommas) {
             if (!string.IsNullOrEmpty(fieldsSeparatedByCommas)) {

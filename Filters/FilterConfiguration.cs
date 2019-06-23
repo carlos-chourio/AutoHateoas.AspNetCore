@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
-using CcLibrary.AspNetCore.Common;
+using AutoHateoas.AspNetCore.Common;
 using Microsoft.AspNetCore.Mvc.Routing;
-using CcLibrary.AspNetCore.Attributes;
+using AutoHateoas.AspNetCore.Attributes;
 
-namespace CcLibrary.AspNetCore.Filters {
+namespace AutoHateoas.AspNetCore.Filters {
     public class FilterConfiguration {
         internal IDictionary<Type, ControllerInfo> ControllerInfoDictionary { get; private set; }
-        private string dumbLogger;
         internal bool SupportsCustomDataType { get; private set; }
         internal string CustomDataType { get; private set; }
         internal Type CustomPaginationModelType { get; private set; }

@@ -1,8 +1,8 @@
-using CcLibrary.AspNetCore.Validation;
+using AutoHateoas.AspNetCore.Validation;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CcLibrary.AspNetCore.Common {
+namespace AutoHateoas.AspNetCore.Common {
     public class PaginationModel<TEntity> : PaginationModel, IValidatableObject {
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) {
             if (!PropertiesValidator.ValidatePropertiesExist(typeof(TEntity), FieldsRequested)) {

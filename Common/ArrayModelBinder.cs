@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CcLibrary.AspNetCore.Common {
+namespace AutoHateoas.AspNetCore.Common {
     public class ArrayModelBinder<TType> : IModelBinder {
         public Task BindModelAsync(ModelBindingContext bindingContext) {
             if (bindingContext.ModelMetadata.IsEnumerableType) {

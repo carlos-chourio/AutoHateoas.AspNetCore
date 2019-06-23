@@ -1,4 +1,4 @@
-namespace CcLibrary.AspNetCore {
+namespace AutoHateoas.AspNetCore {
     public interface IPaginationLinks {
         string PreviousPageLink { get; set; }
         string NextPageLink { get; set; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Reflection;
 
-namespace CcLibrary.AspNetCore.Extensions {
+namespace AutoHateoas.AspNetCore.Extensions {
     public static class ObjectExtensions {
         public static ExpandoObject ShapeDataWithRequestedFields<TSource>(this TSource obj, string fieldsSeparatedByCommas = null, bool addLinks = false) where TSource : class {
             if (obj != null) {

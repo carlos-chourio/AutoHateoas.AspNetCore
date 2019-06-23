@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using CcLibrary.AspNetCore.Collections.Abstractions;
+using AutoHateoas.AspNetCore.Collections.Abstractions;
 
-namespace CcLibrary.AspNetCore.Collections {
+namespace AutoHateoas.AspNetCore.Collections {
     public class PagedList<T> : List<T>, IPagedList<T> {
         public int CurrentPage { get; private set; }
         public int TotalPages { get; private set; }

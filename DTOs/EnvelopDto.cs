@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace CcLibrary.AspNetCore.DTOs {
-    public class EnvelopCollectionDto<T> {
+namespace AutoHateoas.AspNetCore.DTOs {
+    public class EnvelopCollection<T> {
         public IEnumerable<T> Items { get; set; }
         public IList<LinkDto> Links { get; set; } = new List<LinkDto>();
-        public EnvelopCollectionDto(IEnumerable<T> collection) {
+        public EnvelopCollection(IEnumerable<T> collection) {
             Items = collection;
         }
-        public EnvelopCollectionDto() {}
+        public EnvelopCollection() {}
     }
 
     public class EnvelopDto<TDto> : ILinkResource {

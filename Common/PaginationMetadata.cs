@@ -1,4 +1,4 @@
-﻿namespace CcLibrary.AspNetCore.Common {
+﻿namespace AutoHateoas.AspNetCore.Common {
     public class PaginationMetadata : PaginationInfo, IPaginationLinks {
         public string PreviousPageLink { get; set; }
         public string NextPageLink { get; set; }
