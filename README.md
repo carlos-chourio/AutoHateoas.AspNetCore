@@ -1,3 +1,3 @@
 # AutoHateoas.AspNetCore
 
-Library for Asp .Net Core APIs
+This library automatically handles link generation for Hateoas in Restful APIs
