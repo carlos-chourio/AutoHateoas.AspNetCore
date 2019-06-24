@@ -5,7 +5,7 @@
         public string SelfPageLink { get; set; }
 
         public PaginationMetadata(int totalCount, int pageSize, int currentPage, int totalPages,
-            string previousPageLink, string nextPageLink, string selfPageLink) {
+            string previousPageLink, string nextPageLink, string selfPageLink) : base(totalCount, pageSize, currentPage, totalPages) {
             TotalCount = totalCount;
             PageSize = pageSize;
             CurrentPage = currentPage;
@@ -16,12 +16,7 @@
         }
 
         public PaginationInfo ToPaginationInfo() {
-            return new PaginationInfo() {
-                CurrentPage = CurrentPage,
-                PageSize = PageSize,
-                TotalPages = TotalPages,
-                TotalCount = TotalCount
-            };
+            return this;
         }
     }
 }

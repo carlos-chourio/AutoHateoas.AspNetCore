@@ -1,6 +1,7 @@
 ﻿using AutoHateoas.AspNetCore.Common;
 using AutoHateoas.AspNetCore.Filters;
 using Microsoft.AspNetCore.Builder;
+using System;
 using System.Reflection;
 
 namespace AutoHateoas.AspNetCore.Extensions {
@@ -49,7 +50,20 @@ namespace AutoHateoas.AspNetCore.Extensions {
         /// <returns></returns>
         public static IApplicationBuilder UseAutoHateoas<TPaginationModel>(this IApplicationBuilder applicationBuilder, Assembly assembly, string customDataType) where TPaginationModel : PaginationModel {
             var filterConfiguration = GetFilterConfiguration(applicationBuilder);
-            filterConfiguration.ScanControllersInfo(assembly, customDataType);
+            filterConfiguration.ScanControllersInfo(assembly, customDataType, typeof(TPaginationModel));
+            return applicationBuilder;
+        }
+
+        /// <summary>
+        /// Enables Automatic Hateoas  with custom data type and Custom Pagination Model
+        /// </summary>
+        /// <param name="paginationModelType">Custom Pagination Model type</param>
+        /// <param name="assembly">The assembly in which you want to support Automatic Hateoas</param>
+        /// <param name="customDataType">the custom data type you're supporting</param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseAutoHateoas(this IApplicationBuilder applicationBuilder, Assembly assembly, string customDataType, Type paginationModelType) {
+            var filterConfiguration = GetFilterConfiguration(applicationBuilder);
+            filterConfiguration.ScanControllersInfo(assembly, customDataType, paginationModelType);
             return applicationBuilder;
         }
 

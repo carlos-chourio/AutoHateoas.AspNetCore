@@ -2,20 +2,23 @@
 
 namespace AutoHateoas.AspNetCore.DTOs {
     public class EnvelopCollection<T> {
-        public IEnumerable<T> Items { get; set; }
+        public IEnumerable<T> Values { get; set; }
         public IList<LinkDto> Links { get; set; } = new List<LinkDto>();
         public EnvelopCollection(IEnumerable<T> collection) {
-            Items = collection;
+            Values = collection;
         }
         public EnvelopCollection() {}
     }
 
-    public class EnvelopDto<TDto> : ILinkResource {
-        public TDto Value { get; set; }
+    public class EnvelopDto<T>  {
+        public T Value { get; set; }
         public IList<LinkDto> Links { get; set; } = new List<LinkDto>();
-        public EnvelopDto(TDto dto) {
-            Value = dto;
+        public EnvelopDto(T value) {
+            Value = value;
         }
-        public EnvelopDto() { }
+        public EnvelopDto(T value, IList<LinkDto> links) {
+            Value = value;
+            Links = links;
+        }
     }
 }

@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using AutoHateoas.AspNetCore.DTOs;
-using AutoHateoas.AspNetCore.Extensions;
-using System.Dynamic;
 using AutoHateoas.AspNetCore.Common;
 
 namespace AutoHateoas.AspNetCore.Filters {
@@ -25,16 +23,14 @@ namespace AutoHateoas.AspNetCore.Filters {
             var result = context.Result as ObjectResult;
             if (FiltersHelper.IsResponseSuccesful(result)) {
                 TDto dto = result.Value as TDto;
-                string fieldsRequested = FiltersHelper.GetValueFromQueryString(context, "fieldsRequested");
                 if (filterConfiguration.SupportsCustomDataType && FiltersHelper.GetValueFromHeader(context, "Accept").Equals(filterConfiguration.CustomDataType)) {
                     var dtoWithLinks = HateoasHelper.CreateLinksForSingleResource(dto, filterConfiguration, linkGenerator, context.Controller.GetType());
-                    var envelopDto = new EnvelopDto<ExpandoObject>() {
-                        Value = dto.ShapeDataWithRequestedFields(fieldsRequested),
-                        Links = dtoWithLinks.Links
-                    };
+                    var envelopDto = new EnvelopDto<TDto>(
+                        dto,
+                        dtoWithLinks.Links);
                     result.Value = envelopDto;
                 } else {
-                    result.Value = dto.ShapeDataWithRequestedFields(fieldsRequested);
+                    result.Value = dto;
                 }
             }
             await next();

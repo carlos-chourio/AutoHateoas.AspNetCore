@@ -31,8 +31,8 @@ namespace AutoHateoas.AspNetCore.Filters {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next) {
             var result = context.Result as ObjectResult;
             if (FiltersHelper.IsResponseSuccesful(result)) {
-                PaginationModel<TEntity> paginationModel = 
-                    await FiltersHelper.GetParameterFromActionAsync<PaginationModel<TEntity>>(context);
+                ValidatedPaginationModel<TEntity> paginationModel = 
+                    await FiltersHelper.GetParameterFromActionAsync<ValidatedPaginationModel<TEntity>>(context);
                 IQueryable<TDto> list = result.Value as IQueryable<TDto>;
                 var dtoPagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
                 /// Doesn't support many pagination methods for a single controller
@@ -42,16 +42,15 @@ namespace AutoHateoas.AspNetCore.Filters {
                 if (filterConfiguration.SupportsCustomDataType && mediaType.Equals(filterConfiguration.CustomDataType, StringComparison.CurrentCultureIgnoreCase)) {
                     var controllerType = context.Controller.GetType();
                     var dtoPagedListWithExternalLinks = HateoasHelper.CreateLinksForCollectionResource(dtoPagedList, filterConfiguration, paginationMetadata, context.Controller.GetType());
-                    var shapedDtoPagedListWithLinks = new EnvelopCollection<ExpandoObject> {
-                        Items = dtoPagedListWithExternalLinks.Items.Select(dto => {
+                    var shapedDtoPagedListWithLinks = new EnvelopCollection<EnvelopDto<TDto>> {
+                        Values = dtoPagedListWithExternalLinks.Values.Select(dto => {
                             return HateoasHelper
-                                .CreateLinksForSingleResource(dto, filterConfiguration, linkGenerator, controllerType)
-                                .ShapeDataWithRequestedFields(paginationModel.FieldsRequested, true);
+                                .CreateLinksForSingleResource(dto, filterConfiguration, linkGenerator, controllerType);
                         }), Links = dtoPagedListWithExternalLinks.Links
                     };
                     result.Value = shapedDtoPagedListWithLinks;
                 } else {
-                    result.Value = dtoPagedList.ShapeCollectionDataWithRequestedFields(paginationModel.FieldsRequested, true);
+                    result.Value = dtoPagedList;
                 }
                 await next();
             }

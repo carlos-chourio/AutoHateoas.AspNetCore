@@ -18,6 +18,17 @@ namespace AutoHateoas.AspNetCore.Filters {
             var parameterDescriptor = context.ActionDescriptor.Parameters.Where(t => t.ParameterType.Equals(typeof(TParameter))).FirstOrDefault();
             return await GetParameterFromParameterDescriptor<TParameter>(context, parameterDescriptor);
         }
+        
+        /// <summary>
+        /// Gets a parameter of type <typeparamref name="TParameterBaseType"/> from the Action by inspectioning the base type of the actual parameter.
+        /// </summary>
+        /// <typeparam name="TParameterBaseType">The type of the base-parameter to return from the the Action </typeparam>
+        /// <param name="context">The Context of the Result Filter</param>
+        /// <returns>The actual Parameter casted to the type <typeparamref name="TParameterBaseType"/></returns>
+        internal static async Task<TParameterBaseType> GetParameterKnowingBaseTypeFromActionAsync<TParameterBaseType>(ResultExecutingContext context) {
+            var parameterDescriptor = context.ActionDescriptor.Parameters.Where(t => t.ParameterType.BaseType.Equals(typeof(TParameterBaseType))).FirstOrDefault();
+            return await GetParameterFromParameterDescriptor<TParameterBaseType>(context, parameterDescriptor);
+        }
 
         /// <summary>
         /// Gets a parameter of type <typeparamref name="TParameter"/> from the Action by inspectioning <paramref name="parentType"/>.
@@ -75,9 +86,20 @@ namespace AutoHateoas.AspNetCore.Filters {
             return result?.Value != null && result?.StatusCode >= 200 && result?.StatusCode < 300;
         }
 
+        internal static string GetControllerName(ResultExecutingContext context) {
+            return context.Controller.GetType().Name.Replace("Controller", "");
+        }
+
         private static async Task<TParameter> GetParameterFromParameterDescriptor<TParameter>(ResultExecutingContext context, ParameterDescriptor parameterDescriptor) {
             ControllerBase controller = context.Controller as ControllerBase;
             TParameter parameter = (TParameter)Activator.CreateInstance(parameterDescriptor.ParameterType);
+            await controller.TryUpdateModelAsync(parameter, parameterDescriptor.ParameterType, string.Empty);
+            return parameter;
+        }
+
+        private static async Task<object> GetParameterFromParameterDescriptor(ResultExecutingContext context, ParameterDescriptor parameterDescriptor) {
+            ControllerBase controller = context.Controller as ControllerBase;
+            object parameter = Activator.CreateInstance(parameterDescriptor.ParameterType);
             await controller.TryUpdateModelAsync(parameter, parameterDescriptor.ParameterType, string.Empty);
             return parameter;
         }

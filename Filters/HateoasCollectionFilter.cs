@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoHateoas.AspNetCore.Common;
 using AutoHateoas.AspNetCore.DTOs;
 using AutoHateoas.AspNetCore.Extensions;
 using AutoHateoas.AspNetCore.Services.Abstractions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 
@@ -17,47 +15,46 @@ namespace AutoHateoas.AspNetCore.Filters {
     /// The object returned by the action must be of type PaginationResult
     /// </summary>
     /// <typeparam name="TDto">The type the data transfer object</typeparam>
-    public class HateoasForCollection<TEntity, TDto> : IAsyncResultFilter  where TDto : IIdentityDto {
-        private readonly IPaginationHelperService paginationHelperService;
+    public class HateoasForCollection<TEntity, TDto> : IAsyncResultFilter where TDto : IIdentityDto {
+        private readonly IPaginationHelperService<TEntity> paginationHelperService;
         private readonly FilterConfiguration filterConfiguration;
         private readonly LinkGenerator linkGenerator;
 
-        public HateoasForCollection(IPaginationHelperService paginationHelperService, FilterConfiguration filterConfiguration, LinkGenerator linkGenerator) {
+        public HateoasForCollection(IPaginationHelperService<TEntity> paginationHelperService, FilterConfiguration filterConfiguration, LinkGenerator linkGenerator) {
             this.paginationHelperService = paginationHelperService ?? throw new ArgumentNullException(nameof(paginationHelperService));
             this.filterConfiguration = filterConfiguration ?? throw new ArgumentNullException(nameof(filterConfiguration));
             this.linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next) {
-            var result = context.Result as ObjectResult;
+            PaginatedResult result = context.Result as PaginatedResult;
             if (FiltersHelper.IsResponseSuccesful(result)) {
-                PaginationModel<TEntity> paginationModel = await FiltersHelper.GetParameterFromActionAsync<PaginationModel<TEntity>>(context);
-                PaginatedResult resultValue = (PaginatedResult) result.Value;
+                PaginationModel paginationModel = await FiltersHelper.GetParameterKnowingBaseTypeFromActionAsync<PaginationModel>(context);
                 // Currently only supports one Collection action in a controller
-                var paginationMethodInfo  = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerActions.Where(t=> t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
-                PaginationMetadata paginationMetadata = paginationHelperService.GeneratePaginationMetaData(resultValue.PaginationInfo, paginationModel, context.Controller.GetType().Name, paginationMethodInfo.ActionName);
+                var paginationMethodInfo = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerActions.Where(t => t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
+                PaginationMetadata paginationMetadata = paginationHelperService.GeneratePaginationMetaData(result.PaginationInfo, paginationModel, FiltersHelper.GetControllerName(context), paginationMethodInfo.ActionName);
                 string mediaType = FiltersHelper.GetValueFromHeader(context, "Accept");
-                IEnumerable<TDto> pagedList = (IEnumerable<TDto>)resultValue.Value;
+                IEnumerable<TDto> pagedList = (IEnumerable<TDto>)result.Value;
                 if (filterConfiguration.SupportsCustomDataType && mediaType.Equals(filterConfiguration.CustomDataType, StringComparison.CurrentCultureIgnoreCase)) {
-                    EnvelopCollection<ExpandoObject> shapedPagedListWithLinks = AddLinksAndShapeData(context, paginationModel, paginationMetadata, pagedList);
-                    result.Value = shapedPagedListWithLinks;
+                    EnvelopCollection<EnvelopDto<TDto>> pagedListWithLinks = AddInternalAndExternalLinks(context, paginationMetadata, pagedList);
+                    result.Value = pagedListWithLinks;
                 } else {
-                    result.Value = pagedList.ShapeCollectionDataWithRequestedFields(paginationModel.FieldsRequested, true);
+                    result.Value = pagedList;
                 }
                 await next();
             }
         }
 
-        private EnvelopCollection<ExpandoObject> AddLinksAndShapeData(ResultExecutingContext context, PaginationModel<TEntity> paginationModel, PaginationMetadata paginationMetadata, IEnumerable<TDto> pagedList) {
+        private EnvelopCollection<EnvelopDto<TDto>> AddInternalAndExternalLinks(ResultExecutingContext context, PaginationMetadata paginationMetadata, IEnumerable<TDto> pagedList) {
             Type controllerType = context.Controller.GetType();
             EnvelopCollection<TDto> pagedListWithExternalLinks = HateoasHelper.CreateLinksForCollectionResource(pagedList, filterConfiguration, paginationMetadata, context.Controller.GetType());
-            EnvelopCollection<ExpandoObject> shapedPagedListWithLinks = new EnvelopCollection<ExpandoObject>
+            EnvelopCollection<EnvelopDto<TDto>> shapedPagedListWithLinks = new EnvelopCollection<EnvelopDto<TDto>>
             {
-                Items = pagedListWithExternalLinks.Items.Select(dto => {
+                Values = pagedListWithExternalLinks.Values.Select(dto => {
                     return HateoasHelper
-                        .CreateLinksForSingleResource(dto, filterConfiguration, linkGenerator, controllerType)
-                        .ShapeDataWithRequestedFields(paginationModel.FieldsRequested, true);
-                }), Links = pagedListWithExternalLinks.Links
+                        .CreateLinksForSingleResource(dto, filterConfiguration, linkGenerator, controllerType);
+                }),
+                Links = pagedListWithExternalLinks.Links
             };
             return shapedPagedListWithLinks;
         }

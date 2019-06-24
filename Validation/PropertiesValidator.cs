@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace AutoHateoas.AspNetCore.Validation {
     public static class PropertiesValidator {
-        public static bool ValidatePropertiesExist(Type type, string fieldsSeparatedByCommas) {
+        public static bool PropertiesExistInType(Type type, string fieldsSeparatedByCommas) {
             if (!string.IsNullOrEmpty(fieldsSeparatedByCommas)) {
                 var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                 var fieldsAfterSplit = fieldsSeparatedByCommas.Split(',');

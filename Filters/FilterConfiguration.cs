@@ -34,7 +34,7 @@ namespace AutoHateoas.AspNetCore.Filters {
                 CustomDataType = customDataType;
             }
 
-            if (customPaginationModelType == null) {
+            if (customPaginationModelType != null) {
                 SupportsCustomPaginationModel = true;
                 CustomPaginationModelType = customPaginationModelType;
             }

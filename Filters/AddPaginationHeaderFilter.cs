@@ -27,7 +27,7 @@ namespace AutoHateoas.AspNetCore.Filters {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next) {
             var result = context.Result as ObjectResult;
             if (FiltersHelper.IsResponseSuccesful(result)) {
-                PaginationModel<TEntity> paginationModel = await FiltersHelper.GetParameterFromActionAsync<PaginationModel<TEntity>>(context);
+                ValidatedPaginationModel<TEntity> paginationModel = await FiltersHelper.GetParameterFromActionAsync<ValidatedPaginationModel<TEntity>>(context);
                 string controllerName = context.Controller.GetType().Name;
                 IQueryable<TEntity> list = result.Value as IQueryable<TEntity>;
                 var pagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
