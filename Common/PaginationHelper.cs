@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace AutoHateoas.AspNetCore.Common {
     internal static class HateoasHelper {
-        internal static EnvelopDto<TDto> CreateLinksForSingleResource<TDto>(TDto dto, FilterConfiguration filterConfiguration, LinkGenerator linkGenerator, Type controllerType)
+        internal static EnvelopDto<TDto> CreateLinksForSingleResource<TDto>(TDto dto, HateoasScanner filterConfiguration, LinkGenerator linkGenerator, Type controllerType)
             where TDto : IIdentityDto {
             var envelop = new EnvelopDto<TDto>(dto);
             ControllerAction[] actionsFromController = filterConfiguration.ControllerInfoDictionary[controllerType]
@@ -27,7 +27,7 @@ namespace AutoHateoas.AspNetCore.Common {
             return envelop;
         }
 
-        internal static EnvelopCollection<TDto> CreateLinksForCollectionResource<TDto>(IEnumerable<TDto> dtoCollection, FilterConfiguration filterConfiguration, PaginationMetadata paginationMetadata, Type controllerType)
+        internal static EnvelopCollection<TDto> CreateLinksForCollectionResource<TDto>(IEnumerable<TDto> dtoCollection, HateoasScanner filterConfiguration, PaginationMetadata paginationMetadata, Type controllerType)
             where TDto : IIdentityDto {
             var action = filterConfiguration.ControllerInfoDictionary[controllerType].ControllerActions.First(t => t.ResourceType == ResourceType.Collection);
             var envelop = new EnvelopCollection<TDto>(dtoCollection);
@@ -37,7 +37,7 @@ namespace AutoHateoas.AspNetCore.Common {
             return envelop;
         }
 
-        internal static void AddPaginationHeaders(FilterConfiguration filterConfiguration, ResultExecutingContext context, PaginationMetadata paginationMetadata) {
+        internal static void AddPaginationHeaders(HateoasScanner filterConfiguration, ResultExecutingContext context, PaginationMetadata paginationMetadata) {
             string pagination = (filterConfiguration.SupportsCustomDataType &&
                                 context.HttpContext.Request.Headers["Accept"].Equals(filterConfiguration.CustomDataType))
                                 ? JsonConvert.SerializeObject(paginationMetadata)

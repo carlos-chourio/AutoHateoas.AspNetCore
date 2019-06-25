@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace AutoHateoas.AspNetCore.Common {
-    public class ValidatedPaginationModel<TEntity> : PaginationModel {
+    public class PaginationModel<TEntity> : PaginationModel {}
+
+    public class ValidatedPaginationModel<TEntity> : PaginationModel<TEntity>, IValidatableObject {
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) {
             if (!PropertiesValidator.PropertiesExistInType(typeof(TEntity), Fields)) {
                 yield return new ValidationResult("The fields requested are invalid", new[] { nameof(Fields) });
@@ -13,6 +15,10 @@ namespace AutoHateoas.AspNetCore.Common {
     }
 
     public class SamplePaginationModel : PaginationModel {
+        public string SampleProperty { get; set; }
+    }
+
+    public class SamplePaginationModel<T> : PaginationModel<T> {
         public string SampleProperty { get; set; }
     }
 

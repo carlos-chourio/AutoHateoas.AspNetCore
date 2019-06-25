@@ -9,9 +9,9 @@ using System;
 namespace AutoHateoas.AspNetCore.Services {
     internal class PaginationHelperService<TEntity> : IPaginationHelperService<TEntity> {
         private readonly LinkGenerator linkGenerator;
-        private readonly FilterConfiguration filterConfiguration;
+        private readonly HateoasScanner filterConfiguration;
 
-        public PaginationHelperService(LinkGenerator linkGenerator, FilterConfiguration filterConfiguration) {
+        public PaginationHelperService(LinkGenerator linkGenerator, HateoasScanner filterConfiguration) {
             this.linkGenerator = linkGenerator;
             this.filterConfiguration = filterConfiguration;
         }
@@ -49,7 +49,7 @@ namespace AutoHateoas.AspNetCore.Services {
                     break;
             }
             if (filterConfiguration.SupportsCustomPaginationModel) {
-                return linkGenerator.GetPathByAction(methodName, controllerName, TryChangeType(currentPaginationModel, filterConfiguration.CustomPaginationModelType));
+                return linkGenerator.GetPathByAction(methodName, controllerName, TryChangeType(currentPaginationModel, filterConfiguration.CustomPaginationModelTypes));
             }
             return linkGenerator.GetPathByAction(methodName, controllerName, currentPaginationModel);
         }

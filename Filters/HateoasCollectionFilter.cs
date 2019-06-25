@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoHateoas.AspNetCore.Common;
 using AutoHateoas.AspNetCore.DTOs;
-using AutoHateoas.AspNetCore.Extensions;
 using AutoHateoas.AspNetCore.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
@@ -17,10 +16,10 @@ namespace AutoHateoas.AspNetCore.Filters {
     /// <typeparam name="TDto">The type the data transfer object</typeparam>
     public class HateoasForCollection<TEntity, TDto> : IAsyncResultFilter where TDto : IIdentityDto {
         private readonly IPaginationHelperService<TEntity> paginationHelperService;
-        private readonly FilterConfiguration filterConfiguration;
+        private readonly HateoasScanner filterConfiguration;
         private readonly LinkGenerator linkGenerator;
 
-        public HateoasForCollection(IPaginationHelperService<TEntity> paginationHelperService, FilterConfiguration filterConfiguration, LinkGenerator linkGenerator) {
+        public HateoasForCollection(IPaginationHelperService<TEntity> paginationHelperService, HateoasScanner filterConfiguration, LinkGenerator linkGenerator) {
             this.paginationHelperService = paginationHelperService ?? throw new ArgumentNullException(nameof(paginationHelperService));
             this.filterConfiguration = filterConfiguration ?? throw new ArgumentNullException(nameof(filterConfiguration));
             this.linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
@@ -30,12 +29,13 @@ namespace AutoHateoas.AspNetCore.Filters {
             PaginatedResult result = context.Result as PaginatedResult;
             if (FiltersHelper.IsResponseSuccesful(result)) {
                 PaginationModel paginationModel = await FiltersHelper.GetParameterKnowingBaseTypeFromActionAsync<PaginationModel>(context);
-                // Currently only supports one Collection action in a controller
-                var paginationMethodInfo = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerActions.Where(t => t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
-                PaginationMetadata paginationMetadata = paginationHelperService.GeneratePaginationMetaData(result.PaginationInfo, paginationModel, FiltersHelper.GetControllerName(context), paginationMethodInfo.ActionName);
+                var paginationMethodInfo = filterConfiguration.ControllerInfoDictionary[context.Controller.GetType()].ControllerActions.
+                    Where(t => t.ResourceType == Attributes.ResourceType.Collection).FirstOrDefault();
+                PaginationMetadata paginationMetadata = paginationHelperService.GeneratePaginationMetaData(
+                    result.PaginationInfo, paginationModel, FiltersHelper.GetControllerName(context), paginationMethodInfo.ActionName);
                 string mediaType = FiltersHelper.GetValueFromHeader(context, "Accept");
                 IEnumerable<TDto> pagedList = (IEnumerable<TDto>)result.Value;
-                if (filterConfiguration.SupportsCustomDataType && mediaType.Equals(filterConfiguration.CustomDataType, StringComparison.CurrentCultureIgnoreCase)) {
+                if (filterConfiguration.HateoasConfiguration.SupportsCustomDataType && mediaType.Equals(filterConfiguration.HateoasConfiguration.CustomDataType, StringComparison.CurrentCultureIgnoreCase)) {
                     EnvelopCollection<EnvelopDto<TDto>> pagedListWithLinks = AddInternalAndExternalLinks(context, paginationMetadata, pagedList);
                     result.Value = pagedListWithLinks;
                 } else {

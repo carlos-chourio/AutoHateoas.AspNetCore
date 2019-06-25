@@ -19,10 +19,10 @@ namespace AutoHateoas.AspNetCore.Filters {
     /// <typeparam name="TEntity">The type of the entity</typeparam>
     public class HateoasAutoPagination<TEntity, TDto> : IAsyncResultFilter  where TDto : IIdentityDto {
         private readonly IPaginationHelperService<TEntity> paginationHelperService;
-        private readonly FilterConfiguration filterConfiguration;
+        private readonly HateoasScanner filterConfiguration;
         private readonly LinkGenerator linkGenerator;
 
-        public HateoasAutoPagination(IPaginationHelperService<TEntity> paginationHelperService, FilterConfiguration filterConfiguration, LinkGenerator linkGenerator) {
+        public HateoasAutoPagination(IPaginationHelperService<TEntity> paginationHelperService, HateoasScanner filterConfiguration, LinkGenerator linkGenerator) {
             this.paginationHelperService = paginationHelperService ?? throw new ArgumentNullException(nameof(paginationHelperService));
             this.filterConfiguration = filterConfiguration ?? throw new ArgumentNullException(nameof(filterConfiguration));
             this.linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
@@ -31,8 +31,8 @@ namespace AutoHateoas.AspNetCore.Filters {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next) {
             var result = context.Result as ObjectResult;
             if (FiltersHelper.IsResponseSuccesful(result)) {
-                ValidatedPaginationModel<TEntity> paginationModel = 
-                    await FiltersHelper.GetParameterFromActionAsync<ValidatedPaginationModel<TEntity>>(context);
+                PaginationModel<TEntity> paginationModel = 
+                    await FiltersHelper.GetParameterFromActionAsync<PaginationModel<TEntity>>(context);
                 IQueryable<TDto> list = result.Value as IQueryable<TDto>;
                 var dtoPagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
                 /// Doesn't support many pagination methods for a single controller

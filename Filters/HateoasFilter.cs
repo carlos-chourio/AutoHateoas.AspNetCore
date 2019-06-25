@@ -12,9 +12,9 @@ namespace AutoHateoas.AspNetCore.Filters {
     /// <typeparam name="TDto">The Dto for the result to be mapped</typeparam>
     public class Hateoas<TDto> : IAsyncResultFilter where TDto : class, IIdentityDto {
         private readonly LinkGenerator linkGenerator;
-        private readonly FilterConfiguration filterConfiguration;
+        private readonly HateoasScanner filterConfiguration;
 
-        public Hateoas(LinkGenerator linkGenerator, FilterConfiguration filterConfiguration) {
+        public Hateoas(LinkGenerator linkGenerator, HateoasScanner filterConfiguration) {
             this.linkGenerator = linkGenerator ?? throw new System.ArgumentNullException(nameof(linkGenerator));
             this.filterConfiguration = filterConfiguration ?? throw new System.ArgumentNullException(nameof(filterConfiguration));
         }

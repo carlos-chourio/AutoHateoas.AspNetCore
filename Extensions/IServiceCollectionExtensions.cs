@@ -17,7 +17,7 @@ namespace AutoHateoas.AspNetCore.Extensions {
 
         public static IServiceCollection AddAutoHateoas(this IServiceCollection serviceCollection) {
             return serviceCollection
-                    .AddSingleton<FilterConfiguration>()
+                    .AddSingleton<HateoasScanner>()
                     .AddTransient(typeof(IPaginationHelperService<>), typeof(PaginationHelperService<>))
                     .AddScoped(typeof(HateoasAutoPagination<,>), typeof(HateoasAutoPagination<,>))
                     .AddScoped(typeof(HateoasForCollection<,>), typeof(HateoasForCollection<,>))

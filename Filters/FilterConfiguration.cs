@@ -8,15 +8,34 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using AutoHateoas.AspNetCore.Attributes;
 
 namespace AutoHateoas.AspNetCore.Filters {
-    public class FilterConfiguration {
-        internal IDictionary<Type, ControllerInfo> ControllerInfoDictionary { get; private set; }
-        internal bool SupportsCustomDataType { get; private set; }
-        internal string CustomDataType { get; private set; }
-        internal Type CustomPaginationModelType { get; private set; }
-        internal bool SupportsCustomPaginationModel { get; private set; }
+    public class HateoasScanner {
 
-        public FilterConfiguration() {
+        public HateoasConfiguration HateoasConfiguration { get; set; }
+        internal IDictionary<Type, ControllerInfo> ControllerInfoDictionary { get; private set; }
+
+        public HateoasScanner() {
             ControllerInfoDictionary = new Dictionary<Type, ControllerInfo>();
+        }
+
+        public void InitializeHateoas(Assembly assembly, HateoasConfiguration hateoasConfiguration) {
+            HateoasConfiguration = hateoasConfiguration;
+            if (assembly == null) {
+                throw new ArgumentNullException(nameof(assembly));
+            } else {
+                HateoasConfiguration.CurrentAssembly = assembly;
+            }
+            if (!string.IsNullOrEmpty(HateoasConfiguration.CustomDataType)) {
+                HateoasConfiguration.SupportsCustomDataType = true;
+            }
+            if (HateoasConfiguration.CustomPaginationModelTypes != null && HateoasConfiguration.CustomPaginationModelTypes.Length > 0) {
+                foreach (var type in HateoasConfiguration.CustomPaginationModelTypes) {
+                    if (type.BaseType != typeof(PaginationModel) || type.BaseType != typeof(PaginationModel<>)) {
+                        throw new ArgumentException($"the type {type} doesn't inherit from " +
+                            $"{(type.IsGenericType ? typeof(PaginationModel<>).Name : typeof(PaginationModel).Name)}");
+                    }
+                }
+                HateoasConfiguration.SupportsCustomPaginationModel = true;
+            }
         }
 
         /// <summary>
@@ -24,21 +43,9 @@ namespace AutoHateoas.AspNetCore.Filters {
         /// </summary>
         /// <param name="assembly">Assembly in which AutoHateoas is going to inspect the code</param>
         /// <param name="customDataType">Custom data type for supporting hateoas</param>
-        /// <param name="customPaginationModelType">The type of the Custom Pagination Model</param>
-        public void ScanControllersInfo(Assembly assembly, string customDataType=null, Type customPaginationModelType = null) {
-            if (assembly == null) {
-                throw new ArgumentNullException(nameof(assembly));
-            }
-            if (!string.IsNullOrEmpty(customDataType)) {
-                SupportsCustomDataType = true;
-                CustomDataType = customDataType;
-            }
-
-            if (customPaginationModelType != null) {
-                SupportsCustomPaginationModel = true;
-                CustomPaginationModelType = customPaginationModelType;
-            }
-            var controllerTypes = assembly.GetTypes().Where(t => t.GetCustomAttribute(typeof(ApiControllerAttribute)) != null);
+        /// <param name="customPaginationModelTypes">The type of the Custom Pagination Model</param>
+        public void ScanControllersInfo() {
+            var controllerTypes = HateoasConfiguration.CurrentAssembly.GetTypes().Where(t => t.GetCustomAttribute(typeof(ApiControllerAttribute)) != null);
             Type[] httpMethodTypes = { typeof(HttpGetAttribute), typeof(HttpPostAttribute), typeof(HttpPutAttribute), typeof(HttpPatchAttribute) };
             foreach (var controllerType in controllerTypes) {
                 var listOfActions = new List<ActionsByHttpMethodType>();

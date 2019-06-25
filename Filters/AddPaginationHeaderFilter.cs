@@ -17,9 +17,9 @@ namespace AutoHateoas.AspNetCore.Filters {
     [Obsolete]
     public class AddPaginationHeaderFilter<TEntity> : IAsyncResultFilter {
         private readonly IPaginationHelperService<TEntity> paginationHelperService;
-        private readonly FilterConfiguration filterConfiguration;
+        private readonly HateoasScanner filterConfiguration;
 
-        public AddPaginationHeaderFilter(IPaginationHelperService<TEntity> paginationHelperService, FilterConfiguration filterConfiguration) {
+        public AddPaginationHeaderFilter(IPaginationHelperService<TEntity> paginationHelperService, HateoasScanner filterConfiguration) {
             this.paginationHelperService = paginationHelperService ?? throw new System.ArgumentNullException(nameof(paginationHelperService));
             this.filterConfiguration = filterConfiguration ?? throw new System.ArgumentNullException(nameof(filterConfiguration));
         }
@@ -27,7 +27,7 @@ namespace AutoHateoas.AspNetCore.Filters {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next) {
             var result = context.Result as ObjectResult;
             if (FiltersHelper.IsResponseSuccesful(result)) {
-                ValidatedPaginationModel<TEntity> paginationModel = await FiltersHelper.GetParameterFromActionAsync<ValidatedPaginationModel<TEntity>>(context);
+                PaginationModel<TEntity> paginationModel = await FiltersHelper.GetParameterFromActionAsync<PaginationModel<TEntity>>(context);
                 string controllerName = context.Controller.GetType().Name;
                 IQueryable<TEntity> list = result.Value as IQueryable<TEntity>;
                 var pagedList = await list.ToPagedListAsync(paginationModel.PageSize, paginationModel.PageNumber);
